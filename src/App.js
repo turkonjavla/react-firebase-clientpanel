@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
 
 import AppNavbar from './components/layout/AppNavbar';
-import Dashboard from './components/clients/Dashboard';
+import Dashboard from './components/dashboard/Dashboard';
 
 class App extends Component {
   render() {
