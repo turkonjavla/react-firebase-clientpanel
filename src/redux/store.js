@@ -1,6 +1,7 @@
-import { createStore, compose } from 'redux';
-import { reactReduxFirebase } from 'react-redux-firebase';
-import { reduxFirestore } from 'redux-firestore';
+import { createStore, compose, applyMiddleware } from 'redux';
+import { reactReduxFirebase, getFirebase } from 'react-redux-firebase';
+import { reduxFirestore, getFirestore } from 'redux-firestore';
+import thunk from 'redux-thunk';
 
 import firebase from 'firebase/app';
 import 'firebase/auth';
@@ -18,6 +19,10 @@ const rrfConfig = {
 };
 
 const enchancers = [
+  applyMiddleware(thunk.withExtraArgument({
+    getFirestore,
+    getFirebase
+  })),
   reduxFirestore(firebase),
   reactReduxFirebase(firebase, rrfConfig),
   window.__REDUX_DEVTOOLS_EXTENSION__ && 
