@@ -64,6 +64,7 @@ class ClientDetails extends Component {
 
   render() {
     const { client } = this.props;
+<<<<<<< Updated upstream
     const { showBalanceUpdate, balanceUpdateAmount } = this.state;
     let balanceForm = '';
 
@@ -91,6 +92,8 @@ class ClientDetails extends Component {
     }
 
 
+=======
+>>>>>>> Stashed changes
     if(client) {
       return (
         <div className="container">
