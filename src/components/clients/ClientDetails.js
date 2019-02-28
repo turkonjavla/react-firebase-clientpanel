@@ -15,6 +15,7 @@ class ClientDetails extends Component {
     };
     this.toggleBalance = this.toggleBalance.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleDeleteClick = this.handleDeleteClick.bind(this);
   }
 
   toggleBalance = () => {
@@ -45,6 +46,20 @@ class ClientDetails extends Component {
         showBalanceUpdate: false,
         balanceUpdateAmount: ''
       })
+  }
+
+  handleDeleteClick = () => {
+    const{ client, firestore, history } = this.props;
+
+    firestore
+      .delete({
+        collection: 'clients',
+        doc: client.id
+      })
+      .then(() => {
+        history.push('/');
+      })
+      .catch(err => console.log(err))
   }
 
   render() {
@@ -88,7 +103,7 @@ class ClientDetails extends Component {
             <div className="col-md-6">
               <div className="btn-group float-right">
                 <Link to={`/client/edit/${client.id}`} className="btn btn-outline-dark"><i className="fas fa-edit"></i> Edit</Link>
-                <button className="btn btn-danger"><i className="fas fa-times-circle"></i> Remove</button>
+                <button onClick={this.handleDeleteClick} className="btn btn-danger"><i className="fas fa-times-circle"></i> Remove</button>
               </div>
             </div>
           </div>
