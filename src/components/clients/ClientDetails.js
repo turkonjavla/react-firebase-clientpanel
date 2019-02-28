@@ -7,9 +7,90 @@ import PropTypes from 'prop-types';
 import Spinner from '../layout/Spinner';
 
 class ClientDetails extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showBalanceUpdate: false,
+      balanceUpdateAmount: ''
+    };
+    this.toggleBalance = this.toggleBalance.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleDeleteClick = this.handleDeleteClick.bind(this);
+  }
+
+  toggleBalance = () => {
+    this.setState({
+      showBalanceUpdate: !this.state.showBalanceUpdate
+    });
+  }
+
+  handleChange = e => {
+    const { name, value } = e.target;
+    this.setState({
+      [name]: value
+    })
+  }
+
+  balanceSubmit = e => {
+    e.preventDefault();
+    
+    const { client, firestore } = this.props;
+    const { balanceUpdateAmount } = this.state;
+    const clientUpdate = {
+      balance: parseFloat(balanceUpdateAmount)
+    };
+    
+    firestore
+      .update({collection: 'clients', doc: client.id}, clientUpdate)
+      this.setState({
+        showBalanceUpdate: false,
+        balanceUpdateAmount: ''
+      })
+  }
+
+  handleDeleteClick = () => {
+    const{ client, firestore, history } = this.props;
+
+    firestore
+      .delete({
+        collection: 'clients',
+        doc: client.id
+      })
+      .then(() => {
+        history.push('/');
+      })
+      .catch(err => console.log(err))
+  }
+
   render() {
     const { client } = this.props;
-    console.log(client)
+    const { showBalanceUpdate, balanceUpdateAmount } = this.state;
+    let balanceForm = '';
+
+    if(showBalanceUpdate) {
+      balanceForm = (
+        <form onSubmit={this.balanceSubmit}>
+          <div className="input-group">
+            <input 
+              type="text" 
+              name="balanceUpdateAmount" 
+              className="form-control"
+              placeholder="New Balance"
+              value={balanceUpdateAmount}
+              onChange={this.handleChange}
+            />
+            <div className="input-group-append">
+              <input type="submit" value="Update" className="btn btn-outline-primary"/>
+            </div>
+          </div>
+        </form>
+      )
+    } 
+    else {
+      balanceForm = null;
+    }
+
+
     if(client) {
       return (
         <div className="container">
@@ -22,7 +103,7 @@ class ClientDetails extends Component {
             <div className="col-md-6">
               <div className="btn-group float-right">
                 <Link to={`/client/edit/${client.id}`} className="btn btn-outline-dark"><i className="fas fa-edit"></i> Edit</Link>
-                <button className="btn btn-danger"><i className="fas fa-times-circle"></i> Remove</button>
+                <button onClick={this.handleDeleteClick} className="btn btn-danger"><i className="fas fa-times-circle"></i> Remove</button>
               </div>
             </div>
           </div>
@@ -34,10 +115,16 @@ class ClientDetails extends Component {
             <div className="card-body">
               <div className="row">
                 <div className="col-md-8 col-sm-6">
-                  <h5>Client ID: {' '} <span className="text-secondary">{ client.id }</span></h5>
+                  <h5>Client ID: {' '} <span className="text-secondary">{ client.id }</span>
+                  </h5>
                 </div>
                 <div className="col-md-4 col-sm-6">
-                  <h5 className="pull-right">Balance: ${ parseFloat(client.balance).toFixed(2) }</h5>
+                  <h5 className="pull-right">Balance: ${ parseFloat(client.balance).toFixed(2) }
+                    <a href="#!" onClick={this.toggleBalance}>{' '}
+                      <i className="fas fa-edit text-warning"></i>
+                    </a>
+                  </h5>
+                  {balanceForm}
                 </div>
               </div>
               <hr/>
